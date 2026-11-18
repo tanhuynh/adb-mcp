@@ -1,3 +1,6 @@
+Fork of https://github.com/mikechambers/adb-mcp/ (remote `upstream`) with small local patches (`__main__` entry points in the MCP servers).
+The Photoshop editing workflow that uses it (agent rules, recipes, measurement tools) lives in https://github.com/tanhuynh/darkroom-agents.
+
 # adb-mcp
 
 adb-mcp is a proof of concept project to enabled AI control of Adobe tools (Adobe Photoshop and Adobe Premiere) by providing an interface to LLMs via the MCP protocol.
