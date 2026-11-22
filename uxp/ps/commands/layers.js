@@ -912,39 +912,48 @@ const getLayerImage = async (command) => {
 
     const options = command.options;
     const layerId = options.layerId;
+    const maxSize = options.maxSize ?? 1024;
 
     const layer = findLayer(layerId);
 
     if (!layer) {
-        throw new Error(`harmonizeLayer : Could not find layerId : ${layerId}`);
+        throw new Error(`getLayerImage : Could not find layerId : ${layerId}`);
     }
 
     let out = await execute(async () => {
 
         const pixelsOpt = {
             applyAlpha: true,
-            layerID:layerId
+            layerID: layerId,                                  // omit in getDocumentImage
+            componentSize: 8,                                  // 16-bit → 8-bit for the JPEG encoder
+            targetSize: { width: maxSize },                    // aspect kept; small previews
+            colorProfile: "sRGB IEC61966-2.1",                 // ProPhoto JPEGs look flat to the LLM
         };
         
         const imgObj = await imaging.getPixels(pixelsOpt);
+        try {
+            const base64Data = await imaging.encodeImageData({
+                        imageData: imgObj.imageData,
+                        base64: true,
+                    });
+            const result = {
+                base64Image: base64Data,
+                dataUrl: `data:image/jpeg;base64,${base64Data}`,
+                width: imgObj.imageData.width,
+                height: imgObj.imageData.height,
+                colorSpace: imgObj.imageData.colorSpace,
+                components: imgObj.imageData.components,
+                format: "jpeg",
+            };
 
-        const base64Data = await imaging.encodeImageData({
-            imageData: imgObj.imageData,
-            base64: true,
-        });
+            return result;
+        }
+        finally {
+            imgObj.imageData.dispose();
+        }
+        
 
-        const result = {
-            base64Image: base64Data,
-            dataUrl: `data:image/jpeg;base64,${base64Data}`,
-            width: imgObj.imageData.width,
-            height: imgObj.imageData.height,
-            colorSpace: imgObj.imageData.colorSpace,
-            components: imgObj.imageData.components,
-            format: "jpeg",
-        };
-
-        imgObj.imageData.dispose();
-        return result;
+        
     });
 
     return out;

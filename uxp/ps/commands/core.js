@@ -126,31 +126,40 @@ const placeImage = async (command) => {
 };
 
 const getDocumentImage = async (command) => {
+    const options = command.options ?? {};
+    const maxSize = options.maxSize ?? 1024;
+
     let out = await execute(async () => {
 
         const pixelsOpt = {
-            applyAlpha: true
+            applyAlpha: true,
+            componentSize: 8,                                  // 16-bit → 8-bit for the JPEG encoder
+            targetSize: { width: maxSize },                    // aspect kept; small previews
+            colorProfile: "sRGB IEC61966-2.1",                 // ProPhoto JPEGs look flat to the LLM
         };
 
         const imgObj = await imaging.getPixels(pixelsOpt);
+        try {
+            const base64Data = await imaging.encodeImageData({
+                imageData: imgObj.imageData,
+                base64: true,
+            });
 
-        const base64Data = await imaging.encodeImageData({
-            imageData: imgObj.imageData,
-            base64: true,
-        });
+            const result = {
+                base64Image: base64Data,
+                dataUrl: `data:image/jpeg;base64,${base64Data}`,
+                width: imgObj.imageData.width,
+                height: imgObj.imageData.height,
+                colorSpace: imgObj.imageData.colorSpace,
+                components: imgObj.imageData.components,
+                format: "jpeg",
+            };
+            return result;
 
-        const result = {
-            base64Image: base64Data,
-            dataUrl: `data:image/jpeg;base64,${base64Data}`,
-            width: imgObj.imageData.width,
-            height: imgObj.imageData.height,
-            colorSpace: imgObj.imageData.colorSpace,
-            components: imgObj.imageData.components,
-            format: "jpeg",
-        };
-
-        imgObj.imageData.dispose();
-        return result;
+        }
+        finally {
+            imgObj.imageData.dispose();
+        }
     });
 
     return out;
@@ -523,7 +532,7 @@ const executeBatchPlayCommand = async (commands) => {
 
     let out = await execute(async () => {
         let o = await action.batchPlay(c, {});
-        return o[0]
+        return o   // all results, not just the first descriptor's
     });
 
     console.log(out)

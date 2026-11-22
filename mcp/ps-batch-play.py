@@ -29,6 +29,9 @@ import socket_client
 import sys
 import os
 
+import io, re
+from PIL import Image as PILImage
+
 FONT_LIMIT = 1000 #max number of font names to return to AI
 
 mcp_name = "Adobe Photoshop Batch Play MCP Server"
@@ -95,6 +98,76 @@ def call_batch_play_command(commands: list):
     )
 
     return sendCommand(command)
+
+
+KEEP = ("WhiteBalance", "Temperature", "Tint", "Exposure2012", "Contrast2012",
+        "Highlights2012", "Shadows2012", "Whites2012", "Blacks2012", "Texture",
+        "Clarity2012", "Dehaze", "Vibrance", "Saturation", "CameraProfile",
+        "Look", "LensProfileEnable", "ColorNoiseReduction", "Sharpness")
+HSL = ("HueAdjustment", "SaturationAdjustment", "LuminanceAdjustment")
+# Camera Raw writes crs: settings both as attributes and as simple elements
+_ATTR = re.compile(r'crs:(\w+)="([^"]*)"')
+_ELEM = re.compile(r'<crs:(\w+)>([^<]*)</crs:\1>')
+THUMB = (64, 64)          # downsampled RGB thumbnail compared between calls
+STALE_MAD = 1.5          # mean absolute difference (0-255 scale); tune after a known raw edit
+_last_thumb: dict[int, np.ndarray] = {}
+
+
+def _bp(descs: list):
+    r = sendCommand(createCommand("executeBatchPlayCommand", {"commands": descs}))
+    if r.get("status") != "SUCCESS":
+        raise RuntimeError(f"batchPlay failed: {r}")
+    return r["response"]
+
+
+@mcp.tool()
+def get_raw_baseline() -> dict:
+    """Raw develop settings captured when the active document was opened from Lightroom Classic.
+    Frozen snapshot: raw edits made later in Photoshop are NOT reflected; use check_stale.
+    Returns source='unavailable' for a saved/reopened file (crs AlreadyApplied=True)."""
+    res = _bp([{"_obj": "get", "_target": [
+        {"_property": "XMPMetadataAsUTF8"},
+        {"_ref": "document", "_enum": "ordinal", "_value": "targetEnum"}]}])
+    res = res[0] if isinstance(res, list) else res
+    xmp = res["XMPMetadataAsUTF8"]
+    crs = dict(_ATTR.findall(xmp)) | dict(_ELEM.findall(xmp))
+    if crs.get("AlreadyApplied") == "True":
+        return {"source": "unavailable",
+                "reason": "AlreadyApplied=True: document crs describes the saved TIFF, not the raw",
+                "hint": "baseline = the source CR3's Lightroom settings; ask the user"}
+    return {"source": "document_xmp_at_open",
+            "baseline": {k: crs[k] for k in KEEP if k in crs},
+            "hsl": {k: v for k, v in crs.items() if k.startswith(HSL) and v not in ("0", "+0")},
+            "has_masks": "MaskGroupBasedCorrections" in xmp}
+
+
+def _thumb(b64: str) -> np.ndarray:
+    with PILImage.open(io.BytesIO(base64.b64decode(b64))) as im:
+        return np.asarray(im.convert("RGB").resize(THUMB, PILImage.BILINEAR), dtype=np.float32)
+
+
+@mcp.tool()
+def check_stale(layer_id: int, mark: bool = False) -> dict:
+    """Compare the layer render with the thumbnail stored after the LLM's last batch.
+    Call with mark=True right after each LLM batch. stale=True with no LLM change
+    means the user edited something (e.g. the raw in Camera Raw): ask what changed.
+    channel_shift is the mean R/G/B change; an uneven shift suggests a white-balance edit.
+    Uses mean pixel difference (not a perceptual hash) so global exposure/WB edits register."""
+    r = sendCommand(createCommand("getLayerImage", {"layerId": layer_id, "maxSize": 512}))
+    if r.get("status") != "SUCCESS":
+        raise RuntimeError(f"getLayerImage failed: {r}")
+    t = _thumb(r["response"]["dataUrl"].split(",", 1)[1])
+    prev = _last_thumb.get(layer_id)
+    if prev is None or prev.shape != t.shape:
+        out = {"stale": False, "distance": None, "channel_shift": None}
+    else:
+        diff = t - prev
+        mad = float(np.abs(diff).mean())
+        out = {"stale": mad > STALE_MAD, "distance": round(mad, 2),
+               "channel_shift": [round(float(c), 2) for c in diff.reshape(-1, 3).mean(axis=0)]}
+    if mark or prev is None:
+        _last_thumb[layer_id] = t
+    return out
 
 
 @mcp.resource("config://get_instructions")

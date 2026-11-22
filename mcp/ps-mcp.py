@@ -25,6 +25,8 @@ from core import init, sendCommand, createCommand
 from fonts import list_all_fonts_postscript
 import numpy as np
 import base64
+import io
+from PIL import Image as PILImage
 import socket_client
 import sys
 import os
@@ -247,12 +249,13 @@ def group_layers(group_name: str, layer_ids: list[int]) -> list:
 
 
 @mcp.tool()
-def get_layer_image(layer_id: int):
+def get_layer_image(layer_id: int, max_size: int = 1024):
     """Returns a jpeg of the specified layer's content as an MCP Image object that can be displayed."""
 
     command = createCommand("getLayerImage",
         {
-            "layerId":layer_id
+            "layerId": layer_id,
+            "maxSize": max_size
         }
     )
 
@@ -273,9 +276,10 @@ def get_layer_image(layer_id: int):
 
 
 @mcp.tool()
-def get_document_image():
-    """Returns a jpeg of the current visible Photoshop document as an MCP Image object that can be displayed."""
-    command = createCommand("getDocumentImage", {})
+def get_document_image(max_size: int = 1024):
+    """Returns a jpeg of the current visible Photoshop document as an MCP Image object that can be displayed.
+    max_size is the width in pixels of the returned preview (aspect ratio kept)."""
+    command = createCommand("getDocumentImage", {"maxSize": max_size})
     response = sendCommand(command)
 
     if response.get('status') == 'SUCCESS' and 'response' in response:
@@ -292,56 +296,44 @@ def get_document_image():
     return response
 
 @mcp.tool()
-def save_document_image_as_png(file_path: str):
+def save_document_image_as_png(file_path: str, max_size: int = 2048):
     """
-    Capture the Photoshop document and save as PNG file
-    
+    Save a preview of the current Photoshop document as a PNG file.
+
+    The plugin returns an 8-bit sRGB JPEG (max_size px wide, aspect kept), which is
+    decoded and written as PNG. Preview quality: use for measuring/review, not for output.
+
     Args:
         file_path: Where to save the PNG file
-        
+        max_size: Width in pixels of the rendered preview
+
     Returns:
         dict: Status and file info
     """
-    command = createCommand("getDocumentImage", {})
+    command = createCommand("getDocumentImage", {"maxSize": max_size})
     response = sendCommand(command)
-    
-    if response.get('format') == 'raw' and 'rawDataBase64' in response:
-        try:
-            # Decode raw data
-            raw_bytes = base64.b64decode(response['rawDataBase64'])
-            
-            # Extract metadata
-            width = response['width']
-            height = response['height']
-            components = response['components']
-            
-            # Convert to numpy array and reshape
-            pixel_array = np.frombuffer(raw_bytes, dtype=np.uint8)
-            image_array = pixel_array.reshape((height, width, components))
-            
-            # Create and save PNG
-            mode = 'RGBA' if components == 4 else 'RGB'
-            image = Image.fromarray(image_array, mode)
-            image.save(file_path, 'PNG')
-            
-            return {
-                'status': 'success',
-                'file_path': file_path,
-                'width': width,
-                'height': height,
-                'size_bytes': os.path.getsize(file_path)
-            }
-            
-        except Exception as e:
-            return {
-                'status': 'error',
-                'error': str(e)
-            }
-    else:
+
+    if response.get('status') != 'SUCCESS' or 'response' not in response:
+        return {'status': 'error', 'error': f'getDocumentImage failed: {response}'}
+
+    data_url = response['response'].get('dataUrl', '')
+    if not data_url.startswith("data:image/jpeg;base64,"):
+        return {'status': 'error', 'error': 'No JPEG image data received'}
+
+    try:
+        jpeg_bytes = base64.b64decode(data_url.split(",", 1)[1])
+        with PILImage.open(io.BytesIO(jpeg_bytes)) as img:
+            img.save(file_path, 'PNG')
+            width, height = img.size
         return {
-            'status': 'error',
-            'error': 'No raw image data received'
+            'status': 'success',
+            'file_path': file_path,
+            'width': width,
+            'height': height,
+            'size_bytes': os.path.getsize(file_path)
         }
+    except Exception as e:
+        return {'status': 'error', 'error': str(e)}
 
 @mcp.tool()
 def get_layers() -> list:
