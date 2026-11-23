@@ -117,7 +117,7 @@ WB_PCT = 0.5             # both |R/G| and |B/G| must move this much (%), in oppo
 
 def _likely_wb(rg_pct: float, bg_pct: float) -> bool:
     return rg_pct * bg_pct < 0 and min(abs(rg_pct), abs(bg_pct)) > WB_PCT
-_last_thumb: dict[int, np.ndarray] = {}
+_last_thumb: dict[tuple, np.ndarray] = {}   # key: (documentId, layer_id)
 
 
 def _bp(descs: list):
@@ -127,22 +127,51 @@ def _bp(descs: list):
     return r["response"]
 
 
+RAW_EXT = (".cr3", ".cr2", ".crw", ".nef", ".nrw", ".arw", ".srf", ".sr2", ".dng",
+           ".raf", ".orf", ".rw2", ".pef", ".srw", ".3fr", ".iiq", ".x3f", ".rwl")
+# Nested crs: containers carry their own copies of keys (a creative profile's
+# Parameters can include sliders). Strip them so only top-level settings are read.
+_NESTED = re.compile(
+    r"<crs:(Look|MaskGroupBasedCorrections|RangeMaskMapInfo|GradientBasedCorrections|"
+    r"CircularGradientBasedCorrections|PaintBasedCorrections|RetouchAreas)\b.*?</crs:\1>",
+    re.S)
+_PRESERVED = re.compile(r"<xmpMM:PreservedFileName>([^<]*)</xmpMM:PreservedFileName>")
+
+
+def _top_level_crs(xmp: str) -> dict:
+    flat = _NESTED.sub("", xmp)
+    crs: dict = {}
+    for k, v in _ATTR.findall(flat) + _ELEM.findall(flat):
+        crs.setdefault(k, v)                     # first occurrence wins
+    return crs
+
+
 @mcp.tool()
-def get_raw_baseline() -> dict:
-    """Raw develop settings captured when the active document was opened from Lightroom Classic.
+def get_raw_baseline(layer_id: int) -> dict:
+    """Raw develop settings captured when the active document was opened from Lightroom
+    Classic as a raw smart object (layer_id = that smart object layer).
     Frozen snapshot: raw edits made later in Photoshop are NOT reflected; use check_stale.
-    Returns source='unavailable' for a saved/reopened file (crs AlreadyApplied=True)."""
-    res = _bp([{"_obj": "get", "_target": [
-        {"_property": "XMPMetadataAsUTF8"},
-        {"_ref": "document", "_enum": "ordinal", "_value": "targetEnum"}]}])
-    res = res[0] if isinstance(res, list) else res
-    xmp = res["XMPMetadataAsUTF8"]
-    crs = dict(_ATTR.findall(xmp)) | dict(_ELEM.findall(xmp))
-    if crs.get("AlreadyApplied") == "True":
-        return {"source": "unavailable",
-                "reason": "AlreadyApplied=True: document crs describes the saved TIFF, not the raw",
+    Returns source='unavailable' when the smart object does not embed a raw file
+    (e.g. a TIFF opened as a smart object) or the document XMP describes another file."""
+    so, meta = _bp([
+        {"_obj": "get", "_target": [{"_property": "smartObject"}, {"_ref": "layer", "_id": layer_id},
+                                    {"_ref": "document", "_enum": "ordinal", "_value": "targetEnum"}]},
+        {"_obj": "get", "_target": [{"_property": "XMPMetadataAsUTF8"},
+                                    {"_ref": "document", "_enum": "ordinal", "_value": "targetEnum"}]}])
+    embedded = (so.get("smartObject") or {}).get("fileReference", "")
+    if not embedded.lower().endswith(RAW_EXT):
+        return {"source": "unavailable", "embedded_file": embedded or None,
+                "reason": "smart object does not embed a raw file; its Camera Raw settings "
+                          "describe already-rendered pixels",
                 "hint": "baseline = the source CR3's Lightroom settings; ask the user"}
-    return {"source": "document_xmp_at_open",
+    xmp = meta["XMPMetadataAsUTF8"]
+    m = _PRESERVED.search(xmp)
+    if m and m.group(1).strip().lower() != embedded.lower():
+        return {"source": "unavailable", "embedded_file": embedded,
+                "reason": f"document XMP describes {m.group(1).strip()}, not {embedded}",
+                "hint": "ask the user for this raw's Lightroom settings"}
+    crs = _top_level_crs(xmp)
+    return {"source": "document_xmp_at_open", "embedded_file": embedded,
             "baseline": {k: crs[k] for k in KEEP if k in crs},
             "hsl": {k: v for k, v in crs.items() if k.startswith(HSL) and v not in ("0", "+0")},
             "has_masks": "MaskGroupBasedCorrections" in xmp}
@@ -171,7 +200,8 @@ def check_stale(layer_id: int, mark: bool = False) -> dict:
     if r.get("status") != "SUCCESS":
         raise RuntimeError(f"getLayerImage failed: {r}")
     t = _thumb(r["response"]["dataUrl"].split(",", 1)[1])
-    prev = _last_thumb.get(layer_id)
+    key = (r["response"].get("documentId"), layer_id)   # layer ids repeat across documents
+    prev = _last_thumb.get(key)
     if prev is None or prev.shape != t.shape:
         out = {"stale": False, "distance": None, "channel_shift": None, "wb_hint": None}
     else:
@@ -186,7 +216,7 @@ def check_stale(layer_id: int, mark: bool = False) -> dict:
                "wb_hint": {"rg_pct": round(float(rg), 2), "bg_pct": round(float(bg), 2),
                            "likely_wb": _likely_wb(float(rg), float(bg))}}
     if mark or prev is None:
-        _last_thumb[layer_id] = t
+        _last_thumb[key] = t
     return out
 
 

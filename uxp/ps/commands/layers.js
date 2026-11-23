@@ -944,6 +944,7 @@ const getLayerImage = async (command) => {
                 colorSpace: imgObj.imageData.colorSpace,
                 components: imgObj.imageData.components,
                 format: "jpeg",
+                documentId: app.activeDocument.id,   // lets callers key per document
             };
 
             return result;

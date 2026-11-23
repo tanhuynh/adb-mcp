@@ -2,83 +2,105 @@ import pytest
 
 from conftest import fail, gradient, jpeg_payload, ok
 
-# Document XMP as seen on 2026-11-21: fresh from LrC (attribute form) ...
-XMP_ATTR = """<x:xmpmeta><rdf:RDF><rdf:Description
-  crs:Version="19.0" crs:WhiteBalance="Custom" crs:Temperature="7000" crs:Tint="0"
-  crs:Exposure2012="+0.33" crs:Highlights2012="-40" crs:CameraProfile="Adobe Standard"
-  crs:HueAdjustmentYellow="-13" crs:SaturationAdjustmentRed="+6" crs:LuminanceAdjustmentRed="0">
-  <crs:ToneCurvePV2012><rdf:Seq><rdf:li>0, 0</rdf:li><rdf:li>255, 255</rdf:li></rdf:Seq></crs:ToneCurvePV2012>
+# Trimmed from the real document XMP of _52_0367-1 (2026-11-22): fresh from LrC, top-level
+# settings as elements, AlreadyApplied=True (Camera Raw sets it on every rendered doc),
+# and a nested crs:Look whose Parameters repeat keys with different values.
+XMP_FRESH = """<x:xmpmeta><rdf:RDF><rdf:Description rdf:about="">
+ <xmpMM:PreservedFileName>_52_0367.CR3</xmpMM:PreservedFileName>
+ <crs:Version>19.0</crs:Version><crs:WhiteBalance>Auto</crs:WhiteBalance>
+ <crs:Temperature>7500</crs:Temperature><crs:Tint>0</crs:Tint>
+ <crs:Exposure2012>+0.15</crs:Exposure2012><crs:Highlights2012>-40</crs:Highlights2012>
+ <crs:Shadows2012>+35</crs:Shadows2012>
+ <crs:HueAdjustmentYellow>-13</crs:HueAdjustmentYellow>
+ <crs:SaturationAdjustmentRed>+6</crs:SaturationAdjustmentRed>
+ <crs:LuminanceAdjustmentAqua>0</crs:LuminanceAdjustmentAqua>
+ <crs:ToneCurvePV2012><rdf:Seq><rdf:li>0, 0</rdf:li><rdf:li>48, 53</rdf:li></rdf:Seq></crs:ToneCurvePV2012>
+ <crs:RangeMaskMapInfo rdf:parseType="Resource"><crs:RangeMaskMapInfo rdf:parseType="Resource">
+   <crs:RGBMin>0.001 0.001 0.001</crs:RGBMin></crs:RangeMaskMapInfo></crs:RangeMaskMapInfo>
+ <crs:CameraProfile>Adobe Standard</crs:CameraProfile>
+ <crs:Look rdf:parseType="Resource"><crs:Name>Adobe Color</crs:Name>
+   <crs:Parameters rdf:parseType="Resource"><crs:Version>18.0</crs:Version>
+   <crs:Exposure2012>+1.00</crs:Exposure2012><crs:CameraProfile>Camera Landscape</crs:CameraProfile>
+   </crs:Parameters></crs:Look>
+ <crs:HasSettings>True</crs:HasSettings><crs:AlreadyApplied>True</crs:AlreadyApplied>
 </rdf:Description></rdf:RDF></x:xmpmeta>"""
-# ... element form (what `strings` found in the saved TIFF) ...
-XMP_ELEM = """<rdf:Description><crs:WhiteBalance>Custom</crs:WhiteBalance>
-<crs:Temperature>7000</crs:Temperature><crs:Exposure2012>+0.33</crs:Exposure2012>
-</rdf:Description>"""
-# ... and a saved/reopened TIFF.
-XMP_SAVED = """<rdf:Description crs:Version="19.0" crs:ProcessVersion="15.4"
-  crs:WhiteBalance="As Shot" crs:Exposure2012="0" crs:AlreadyApplied="True"/>"""
+XMP_ATTR = """<rdf:Description xmpMM:PreservedFileName="_52_0378.CR3" crs:WhiteBalance="Custom"
+  crs:Temperature="7000" crs:Exposure2012="+0.33"/>"""
 
 
-def xmp_response(xmp, as_list=True):
-    body = {"XMPMetadataAsUTF8": xmp}
-    return ok([body] if as_list else body)
+def so(name):
+    return {"smartObject": {"_obj": "smartObject", "linked": False, "fileReference": name}}
+
+
+def baseline_response(xmp, embedded="_52_0367.CR3"):
+    return ok([so(embedded), {"XMPMetadataAsUTF8": xmp}])
 
 
 class TestGetRawBaseline:
-    def test_sends_targeted_xmp_get(self, bp, fake):
-        fake.queue(xmp_response(XMP_ATTR))
-        bp.get_raw_baseline()
+    def test_sends_smart_object_and_xmp_gets(self, bp, fake):
+        fake.queue(baseline_response(XMP_FRESH))
+        bp.get_raw_baseline(2)
         (cmd,) = fake.calls
-        assert cmd["action"] == "executeBatchPlayCommand"
-        (desc,) = cmd["options"]["commands"]
-        assert desc["_obj"] == "get"
-        assert desc["_target"][0] == {"_property": "XMPMetadataAsUTF8"}
-        assert desc["_target"][1]["_ref"] == "document"
+        d_so, d_xmp = cmd["options"]["commands"]
+        assert d_so["_target"][0] == {"_property": "smartObject"}
+        assert d_so["_target"][1] == {"_ref": "layer", "_id": 2}
+        assert d_xmp["_target"][0] == {"_property": "XMPMetadataAsUTF8"}
 
-    def test_attribute_form(self, bp, fake):
-        fake.queue(xmp_response(XMP_ATTR))
-        r = bp.get_raw_baseline()
+    def test_fresh_raw_document_despite_already_applied(self, bp, fake):
+        fake.queue(baseline_response(XMP_FRESH))
+        r = bp.get_raw_baseline(2)
         assert r["source"] == "document_xmp_at_open"
-        assert r["baseline"]["Temperature"] == "7000"
-        assert r["baseline"]["Exposure2012"] == "+0.33"
+        assert r["embedded_file"] == "_52_0367.CR3"
+        assert r["baseline"]["WhiteBalance"] == "Auto"
+        assert r["baseline"]["Temperature"] == "7500"
         assert r["baseline"]["Highlights2012"] == "-40"
-        assert r["baseline"]["CameraProfile"] == "Adobe Standard"
-        assert r["has_masks"] is False
+
+    def test_nested_look_parameters_do_not_override(self, bp, fake):
+        fake.queue(baseline_response(XMP_FRESH))
+        b = bp.get_raw_baseline(2)["baseline"]
+        assert b["Exposure2012"] == "+0.15"          # not the Look's +1.00
+        assert b["CameraProfile"] == "Adobe Standard"  # not "Camera Landscape"
 
     def test_hsl_keeps_only_nonzero(self, bp, fake):
-        fake.queue(xmp_response(XMP_ATTR))
-        hsl = bp.get_raw_baseline()["hsl"]
-        assert hsl == {"HueAdjustmentYellow": "-13", "SaturationAdjustmentRed": "+6"}
+        fake.queue(baseline_response(XMP_FRESH))
+        assert bp.get_raw_baseline(2)["hsl"] == {
+            "HueAdjustmentYellow": "-13", "SaturationAdjustmentRed": "+6"}
 
-    def test_element_form(self, bp, fake):
-        fake.queue(xmp_response(XMP_ELEM))
-        b = bp.get_raw_baseline()["baseline"]
-        assert b == {"WhiteBalance": "Custom", "Temperature": "7000", "Exposure2012": "+0.33"}
+    def test_attribute_form(self, bp, fake):
+        fake.queue(baseline_response(XMP_ATTR, embedded="_52_0378.CR3"))
+        assert bp.get_raw_baseline(2)["baseline"] == {
+            "WhiteBalance": "Custom", "Temperature": "7000", "Exposure2012": "+0.33"}
 
-    def test_nested_element_does_not_leak(self, bp, fake):
-        fake.queue(xmp_response(XMP_ATTR))
-        r = bp.get_raw_baseline()
-        assert "ToneCurvePV2012" not in r["baseline"]
-
-    @pytest.mark.parametrize("as_list", [True, False], ids=["return-o", "return-o0"])
-    def test_handles_both_plugin_return_shapes(self, bp, fake, as_list):
-        fake.queue(xmp_response(XMP_ATTR, as_list=as_list))
-        assert bp.get_raw_baseline()["baseline"]["Temperature"] == "7000"
-
-    def test_saved_file_is_unavailable(self, bp, fake):
-        fake.queue(xmp_response(XMP_SAVED))
-        r = bp.get_raw_baseline()
+    def test_tiff_smart_object_is_unavailable(self, bp, fake):
+        fake.queue(baseline_response(XMP_FRESH, embedded="_52_0378-Edit.tif"))
+        r = bp.get_raw_baseline(2)
         assert r["source"] == "unavailable"
+        assert r["embedded_file"] == "_52_0378-Edit.tif"
         assert "baseline" not in r
 
+    def test_not_a_smart_object_is_unavailable(self, bp, fake):
+        fake.queue(ok([{}, {"XMPMetadataAsUTF8": XMP_FRESH}]))
+        assert bp.get_raw_baseline(2)["source"] == "unavailable"
+
+    def test_xmp_for_a_different_raw_is_unavailable(self, bp, fake):
+        fake.queue(baseline_response(XMP_FRESH, embedded="_52_0400.CR3"))
+        r = bp.get_raw_baseline(2)
+        assert r["source"] == "unavailable" and "_52_0367.CR3" in r["reason"]
+
+    def test_raw_extension_case_insensitive(self, bp, fake):
+        fake.queue(baseline_response(XMP_FRESH.replace("_52_0367.CR3", "dsc_1.nef"), embedded="DSC_1.NEF"))
+        assert bp.get_raw_baseline(2)["source"] == "document_xmp_at_open"
+
     def test_masks_flag(self, bp, fake):
-        fake.queue(xmp_response(XMP_ATTR.replace("</rdf:Description>",
-                   "<crs:MaskGroupBasedCorrections><rdf:Seq/></crs:MaskGroupBasedCorrections></rdf:Description>")))
-        assert bp.get_raw_baseline()["has_masks"] is True
+        xmp = XMP_FRESH.replace("<crs:HasSettings>",
+              "<crs:MaskGroupBasedCorrections><rdf:Seq/></crs:MaskGroupBasedCorrections><crs:HasSettings>")
+        fake.queue(baseline_response(xmp))
+        assert bp.get_raw_baseline(2)["has_masks"] is True
 
     def test_batchplay_failure_raises(self, bp, fake):
         fake.queue(fail("no document"))
         with pytest.raises(RuntimeError, match="batchPlay failed"):
-            bp.get_raw_baseline()
+            bp.get_raw_baseline(2)
 
 
 class TestCheckStale:
@@ -162,6 +184,15 @@ class TestCheckStale:
         bp.check_stale(3, mark=True)
         assert bp.check_stale(2)["stale"] is False
 
+    def test_same_layer_id_in_different_documents(self, bp, fake):
+        a, b = gradient(), gradient(offset=(30, 30, 30))
+        doc = lambda img, d: ok({**jpeg_payload(img), "documentId": d})
+        fake.queue(doc(a, 65), doc(b, 142), doc(b, 142), doc(a, 65))
+        bp.check_stale(2, mark=True)                 # doc 65 reference
+        assert bp.check_stale(2)["distance"] is None  # doc 142: first sight, not "stale vs doc 65"
+        assert bp.check_stale(2)["stale"] is False    # doc 142 vs its own reference
+        assert bp.check_stale(2)["stale"] is False    # doc 65 still has its own reference
+
     def test_plugin_error_raises(self, bp, fake):
         fake.queue(fail("Only 8 bit image data can be encoded as jpeg"))
         with pytest.raises(RuntimeError, match="getLayerImage failed"):
@@ -183,3 +214,44 @@ def test_call_batch_play_passes_commands_through(bp, fake):
 ], ids=["temp-200K", "exposure+0.10", "flat", "same-sign"])
 def test_likely_wb_rule(bp, rg, bg, expected):
     assert bp._likely_wb(rg, bg) is expected
+
+
+# ---- golden fixture: the real document XMP of _52_0367-1 (fresh from LrC, 2026-11-22) ----
+FIXTURES = __import__("pathlib").Path(__file__).parent / "fixtures"
+
+
+class TestRealXmp0367:
+    @pytest.fixture
+    def xmp(self):
+        return (FIXTURES / "xmp_0367_fresh.xml").read_text(encoding="utf-8")
+
+    def test_baseline_matches_lightroom(self, bp, fake, xmp):
+        fake.queue(ok([so("_52_0367.CR3"), {"XMPMetadataAsUTF8": xmp}]))
+        r = bp.get_raw_baseline(2)
+        assert r["source"] == "document_xmp_at_open"      # despite crs:AlreadyApplied=True
+        assert r["baseline"] == {
+            "WhiteBalance": "Auto", "Temperature": "7500", "Tint": "0",
+            "Exposure2012": "+0.15", "Contrast2012": "+5", "Highlights2012": "-40",
+            "Shadows2012": "+35", "Whites2012": "+23", "Blacks2012": "-16",
+            "Texture": "0", "Clarity2012": "0", "Dehaze": "0",
+            "Vibrance": "+15", "Saturation": "+1", "CameraProfile": "Adobe Standard",
+            "LensProfileEnable": "0", "ColorNoiseReduction": "0", "Sharpness": "40",
+        }
+        assert r["has_masks"] is False
+
+    def test_hsl_nonzero(self, bp, fake, xmp):
+        fake.queue(ok([so("_52_0367.CR3"), {"XMPMetadataAsUTF8": xmp}]))
+        assert bp.get_raw_baseline(2)["hsl"] == {
+            "HueAdjustmentYellow": "-13",
+            "SaturationAdjustmentRed": "+6", "SaturationAdjustmentOrange": "+8",
+            "SaturationAdjustmentYellow": "+21", "SaturationAdjustmentGreen": "+4",
+            "LuminanceAdjustmentRed": "+19", "LuminanceAdjustmentOrange": "+19",
+            "LuminanceAdjustmentYellow": "+12", "LuminanceAdjustmentGreen": "+11",
+        }
+
+    def test_look_block_is_ignored(self, bp, xmp):
+        crs = bp._top_level_crs(xmp)
+        assert crs["Version"] == "19.0" and crs["CameraProfile"] == "Adobe Standard"
+        assert "LookTable" not in crs and "Name" not in crs     # only inside crs:Look
+        assert "RGBMin" not in crs                               # only inside RangeMaskMapInfo
+        assert crs["BlueHue"] == "-16" and crs["BlueSaturation"] == "+28"   # calibration

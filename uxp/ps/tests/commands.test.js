@@ -17,7 +17,7 @@ const fakeImageData = (opts) => ({
 });
 
 const photoshop = {
-    app: { activeDocument: { layers: [{ id: 2, name: "_52_0378" }, { id: 5, name: "grp", layers: [{ id: 7 }] }] } },
+    app: { activeDocument: { id: 142, layers: [{ id: 2, name: "_52_0378" }, { id: 5, name: "grp", layers: [{ id: 7 }] }] } },
     constants: {},
     core: { executeAsModal: async (cb) => cb({}) },
     action: { batchPlay: async (descs) => { calls.batchPlay.push(descs); return state.batchPlayResult; } },
@@ -80,6 +80,11 @@ test("getLayerImage: targets the layer with preview options", async () => {
     const r = await layers.getLayerImage({ options: { layerId: 2 } });
     assert.deepEqual(calls.getPixels[0], { ...PREVIEW_OPTS, layerID: 2, targetSize: { width: 1024 } });
     assert.equal(r.format, "jpeg");
+});
+
+test("getLayerImage: returns the active document id", async () => {
+    const r = await layers.getLayerImage({ options: { layerId: 2 } });
+    assert.equal(r.documentId, 142);
 });
 
 test("getLayerImage: honours maxSize and finds nested layers", async () => {

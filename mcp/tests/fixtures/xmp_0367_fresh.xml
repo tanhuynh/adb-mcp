@@ -1,0 +1,431 @@
+<?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 10.0-c000 79.ca1683a, 2026/09/02-18:41:35        ">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+            xmlns:aux="http://ns.adobe.com/exif/1.0/aux/"
+            xmlns:exifEX="http://cipa.jp/exif/1.0/"
+            xmlns:photoshop="http://ns.adobe.com/photoshop/1.0/"
+            xmlns:stCamera="http://ns.adobe.com/photoshop/1.0/camera-profile"
+            xmlns:crlcp="http://ns.adobe.com/camera-raw-embedded-lens-profile/1.0/"
+            xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+            xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#"
+            xmlns:stRef="http://ns.adobe.com/xap/1.0/sType/ResourceRef#"
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:xmpDM="http://ns.adobe.com/xmp/1.0/DynamicMedia/"
+            xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/"
+            xmlns:tiff="http://ns.adobe.com/tiff/1.0/"
+            xmlns:exif="http://ns.adobe.com/exif/1.0/">
+         <xmp:Rating>1</xmp:Rating>
+         <xmp:ModifyDate>2026-11-22T16:41:06-08:00</xmp:ModifyDate>
+         <xmp:CreateDate>2026-11-03T06:48:19</xmp:CreateDate>
+         <xmp:Label/>
+         <xmp:MetadataDate>2026-11-22T16:41:06-08:00</xmp:MetadataDate>
+         <aux:SerialNumber>155202403430</aux:SerialNumber>
+         <aux:LensInfo>24/1 105/1 0/0 0/0</aux:LensInfo>
+         <aux:Lens>RF24-105mm F4 L IS USM</aux:Lens>
+         <aux:LensID>61182</aux:LensID>
+         <aux:LensSerialNumber>1764000991</aux:LensSerialNumber>
+         <aux:ImageNumber>0</aux:ImageNumber>
+         <aux:ApproximateFocusDistance>162/10</aux:ApproximateFocusDistance>
+         <aux:FlashCompensation>0/1</aux:FlashCompensation>
+         <aux:Firmware>1.3.1</aux:Firmware>
+         <aux:LateralChromaticAberrationCorrectionAlreadyApplied>True</aux:LateralChromaticAberrationCorrectionAlreadyApplied>
+         <exifEX:LensModel>RF24-105mm F4 L IS USM</exifEX:LensModel>
+         <photoshop:DateCreated>2026-11-03T06:48:19.055-07:00</photoshop:DateCreated>
+         <photoshop:LabelColor/>
+         <photoshop:CameraProfiles>
+            <rdf:Seq>
+               <rdf:li rdf:parseType="Resource">
+                  <stCamera:Author>Adobe</stCamera:Author>
+                  <stCamera:Make>Canon</stCamera:Make>
+                  <stCamera:Model>Canon EOS R5m2</stCamera:Model>
+                  <stCamera:UniqueCameraModel>Canon EOS R5 Mark II</stCamera:UniqueCameraModel>
+                  <stCamera:CameraRawProfile>True</stCamera:CameraRawProfile>
+                  <stCamera:AutoScale>False</stCamera:AutoScale>
+                  <stCamera:Lens>RF24-105mm F4 L IS USM</stCamera:Lens>
+                  <stCamera:CameraPrettyName>Canon EOS R5 Mark II</stCamera:CameraPrettyName>
+                  <stCamera:LensPrettyName>RF24-105mm F4 L IS USM</stCamera:LensPrettyName>
+                  <stCamera:ProfileName>Camera Settings</stCamera:ProfileName>
+                  <stCamera:SensorFormatFactor>1.001926</stCamera:SensorFormatFactor>
+                  <stCamera:FocalLength>33</stCamera:FocalLength>
+                  <stCamera:FocusDistance>10000</stCamera:FocusDistance>
+                  <stCamera:ApertureValue>6.918863</stCamera:ApertureValue>
+                  <crlcp:PerspectiveModel rdf:parseType="Resource">
+                     <stCamera:Version>2</stCamera:Version>
+                     <stCamera:ImageXCenter>0.499878</stCamera:ImageXCenter>
+                     <stCamera:ImageYCenter>0.500364</stCamera:ImageYCenter>
+                     <stCamera:ScaleFactor>0.998212</stCamera:ScaleFactor>
+                     <stCamera:RadialDistortParam1>-0.056531</stCamera:RadialDistortParam1>
+                     <stCamera:RadialDistortParam2>0.203799</stCamera:RadialDistortParam2>
+                     <stCamera:RadialDistortParam3>-0.170778</stCamera:RadialDistortParam3>
+                     <crlcp:VignetteModel rdf:parseType="Resource">
+                        <stCamera:VignetteModelParam1>1</stCamera:VignetteModelParam1>
+                        <stCamera:VignetteModelPiecewiseParam>
+                           <rdf:Seq>
+                              <rdf:li>0.000000, 1.000000</rdf:li>
+                              <rdf:li>0.048699, 0.997802</rdf:li>
+                              <rdf:li>0.097397, 0.990966</rdf:li>
+                              <rdf:li>0.146096, 0.979734</rdf:li>
+                              <rdf:li>0.194634, 0.964107</rdf:li>
+                              <rdf:li>0.243332, 0.944451</rdf:li>
+                              <rdf:li>0.292031, 0.921133</rdf:li>
+                              <rdf:li>0.340730, 0.894640</rdf:li>
+                              <rdf:li>0.389428, 0.865584</rdf:li>
+                              <rdf:li>0.438127, 0.833964</rdf:li>
+                              <rdf:li>0.486665, 0.800879</rdf:li>
+                              <rdf:li>0.535363, 0.766939</rdf:li>
+                              <rdf:li>0.584062, 0.733366</rdf:li>
+                              <rdf:li>0.632760, 0.701502</rdf:li>
+                              <rdf:li>0.681459, 0.669759</rdf:li>
+                              <rdf:li>0.730158, 0.637895</rdf:li>
+                           </rdf:Seq>
+                        </stCamera:VignetteModelPiecewiseParam>
+                     </crlcp:VignetteModel>
+                  </crlcp:PerspectiveModel>
+               </rdf:li>
+            </rdf:Seq>
+         </photoshop:CameraProfiles>
+         <photoshop:LegacyIPTCDigest>E7E8B64BABFB51582BFA2EE2DD9A4BDE</photoshop:LegacyIPTCDigest>
+         <photoshop:ColorMode>3</photoshop:ColorMode>
+         <photoshop:ICCProfile>ProPhoto RGB</photoshop:ICCProfile>
+         <xmpMM:DocumentID>xmp.did:6562cfc1-825d-4a72-a460-a445bf6913d4</xmpMM:DocumentID>
+         <xmpMM:PreservedFileName>_52_0367.CR3</xmpMM:PreservedFileName>
+         <xmpMM:History>
+            <rdf:Seq>
+               <rdf:li rdf:parseType="Resource">
+                  <stEvt:action>derived</stEvt:action>
+                  <stEvt:parameters>converted from image/x-canon-cr3 to image/tiff</stEvt:parameters>
+               </rdf:li>
+               <rdf:li rdf:parseType="Resource">
+                  <stEvt:action>saved</stEvt:action>
+                  <stEvt:instanceID>xmp.iid:6562cfc1-825d-4a72-a460-a445bf6913d4</stEvt:instanceID>
+                  <stEvt:when>2026-11-22T16:41:06-08:00</stEvt:when>
+                  <stEvt:softwareAgent>Adobe Photoshop Camera Raw 19.0 (Macintosh)</stEvt:softwareAgent>
+                  <stEvt:changed>/</stEvt:changed>
+               </rdf:li>
+               <rdf:li rdf:parseType="Resource">
+                  <stEvt:action>converted</stEvt:action>
+                  <stEvt:parameters>from image/tiff to application/vnd.adobe.photoshop</stEvt:parameters>
+               </rdf:li>
+            </rdf:Seq>
+         </xmpMM:History>
+         <xmpMM:OriginalDocumentID>C80A9B8DA1A25090E4B5AEE5C537DFB2</xmpMM:OriginalDocumentID>
+         <xmpMM:DerivedFrom rdf:parseType="Resource">
+            <stRef:documentID>C80A9B8DA1A25090E4B5AEE5C537DFB2</stRef:documentID>
+            <stRef:originalDocumentID>C80A9B8DA1A25090E4B5AEE5C537DFB2</stRef:originalDocumentID>
+         </xmpMM:DerivedFrom>
+         <xmpMM:InstanceID>xmp.iid:6562cfc1-825d-4a72-a460-a445bf6913d4</xmpMM:InstanceID>
+         <dc:format>image/tiff</dc:format>
+         <xmpDM:good>true</xmpDM:good>
+         <xmpDM:pick>1</xmpDM:pick>
+         <crs:Version>19.0</crs:Version>
+         <crs:CompatibleVersion>285212672</crs:CompatibleVersion>
+         <crs:ProcessVersion>15.4</crs:ProcessVersion>
+         <crs:WhiteBalance>Auto</crs:WhiteBalance>
+         <crs:AutoWhiteVersion>134348800</crs:AutoWhiteVersion>
+         <crs:Temperature>7500</crs:Temperature>
+         <crs:Tint>0</crs:Tint>
+         <crs:Exposure2012>+0.15</crs:Exposure2012>
+         <crs:Contrast2012>+5</crs:Contrast2012>
+         <crs:Highlights2012>-40</crs:Highlights2012>
+         <crs:Shadows2012>+35</crs:Shadows2012>
+         <crs:Whites2012>+23</crs:Whites2012>
+         <crs:Blacks2012>-16</crs:Blacks2012>
+         <crs:Texture>0</crs:Texture>
+         <crs:Clarity2012>0</crs:Clarity2012>
+         <crs:Dehaze>0</crs:Dehaze>
+         <crs:Vibrance>+15</crs:Vibrance>
+         <crs:Saturation>+1</crs:Saturation>
+         <crs:ParametricShadows>0</crs:ParametricShadows>
+         <crs:ParametricDarks>0</crs:ParametricDarks>
+         <crs:ParametricLights>0</crs:ParametricLights>
+         <crs:ParametricHighlights>0</crs:ParametricHighlights>
+         <crs:ParametricShadowSplit>25</crs:ParametricShadowSplit>
+         <crs:ParametricMidtoneSplit>50</crs:ParametricMidtoneSplit>
+         <crs:ParametricHighlightSplit>75</crs:ParametricHighlightSplit>
+         <crs:Sharpness>40</crs:Sharpness>
+         <crs:SharpenRadius>+0.5</crs:SharpenRadius>
+         <crs:SharpenDetail>100</crs:SharpenDetail>
+         <crs:SharpenEdgeMasking>87</crs:SharpenEdgeMasking>
+         <crs:LuminanceSmoothing>0</crs:LuminanceSmoothing>
+         <crs:ColorNoiseReduction>0</crs:ColorNoiseReduction>
+         <crs:HueAdjustmentRed>0</crs:HueAdjustmentRed>
+         <crs:HueAdjustmentOrange>0</crs:HueAdjustmentOrange>
+         <crs:HueAdjustmentYellow>-13</crs:HueAdjustmentYellow>
+         <crs:HueAdjustmentGreen>0</crs:HueAdjustmentGreen>
+         <crs:HueAdjustmentAqua>0</crs:HueAdjustmentAqua>
+         <crs:HueAdjustmentBlue>0</crs:HueAdjustmentBlue>
+         <crs:HueAdjustmentPurple>0</crs:HueAdjustmentPurple>
+         <crs:HueAdjustmentMagenta>0</crs:HueAdjustmentMagenta>
+         <crs:SaturationAdjustmentRed>+6</crs:SaturationAdjustmentRed>
+         <crs:SaturationAdjustmentOrange>+8</crs:SaturationAdjustmentOrange>
+         <crs:SaturationAdjustmentYellow>+21</crs:SaturationAdjustmentYellow>
+         <crs:SaturationAdjustmentGreen>+4</crs:SaturationAdjustmentGreen>
+         <crs:SaturationAdjustmentAqua>0</crs:SaturationAdjustmentAqua>
+         <crs:SaturationAdjustmentBlue>0</crs:SaturationAdjustmentBlue>
+         <crs:SaturationAdjustmentPurple>0</crs:SaturationAdjustmentPurple>
+         <crs:SaturationAdjustmentMagenta>0</crs:SaturationAdjustmentMagenta>
+         <crs:LuminanceAdjustmentRed>+19</crs:LuminanceAdjustmentRed>
+         <crs:LuminanceAdjustmentOrange>+19</crs:LuminanceAdjustmentOrange>
+         <crs:LuminanceAdjustmentYellow>+12</crs:LuminanceAdjustmentYellow>
+         <crs:LuminanceAdjustmentGreen>+11</crs:LuminanceAdjustmentGreen>
+         <crs:LuminanceAdjustmentAqua>0</crs:LuminanceAdjustmentAqua>
+         <crs:LuminanceAdjustmentBlue>0</crs:LuminanceAdjustmentBlue>
+         <crs:LuminanceAdjustmentPurple>0</crs:LuminanceAdjustmentPurple>
+         <crs:LuminanceAdjustmentMagenta>0</crs:LuminanceAdjustmentMagenta>
+         <crs:SplitToningShadowHue>0</crs:SplitToningShadowHue>
+         <crs:SplitToningShadowSaturation>0</crs:SplitToningShadowSaturation>
+         <crs:SplitToningHighlightHue>0</crs:SplitToningHighlightHue>
+         <crs:SplitToningHighlightSaturation>0</crs:SplitToningHighlightSaturation>
+         <crs:SplitToningBalance>0</crs:SplitToningBalance>
+         <crs:ColorGradeMidtoneHue>0</crs:ColorGradeMidtoneHue>
+         <crs:ColorGradeMidtoneSat>0</crs:ColorGradeMidtoneSat>
+         <crs:ColorGradeShadowLum>0</crs:ColorGradeShadowLum>
+         <crs:ColorGradeMidtoneLum>0</crs:ColorGradeMidtoneLum>
+         <crs:ColorGradeHighlightLum>0</crs:ColorGradeHighlightLum>
+         <crs:ColorGradeBlending>50</crs:ColorGradeBlending>
+         <crs:ColorGradeGlobalHue>0</crs:ColorGradeGlobalHue>
+         <crs:ColorGradeGlobalSat>0</crs:ColorGradeGlobalSat>
+         <crs:ColorGradeGlobalLum>0</crs:ColorGradeGlobalLum>
+         <crs:AutoLateralCA>1</crs:AutoLateralCA>
+         <crs:LensProfileEnable>0</crs:LensProfileEnable>
+         <crs:LensManualDistortionAmount>0</crs:LensManualDistortionAmount>
+         <crs:VignetteAmount>0</crs:VignetteAmount>
+         <crs:DefringePurpleAmount>0</crs:DefringePurpleAmount>
+         <crs:DefringePurpleHueLo>30</crs:DefringePurpleHueLo>
+         <crs:DefringePurpleHueHi>70</crs:DefringePurpleHueHi>
+         <crs:DefringeGreenAmount>0</crs:DefringeGreenAmount>
+         <crs:DefringeGreenHueLo>40</crs:DefringeGreenHueLo>
+         <crs:DefringeGreenHueHi>60</crs:DefringeGreenHueHi>
+         <crs:PerspectiveUpright>0</crs:PerspectiveUpright>
+         <crs:PerspectiveVertical>0</crs:PerspectiveVertical>
+         <crs:PerspectiveHorizontal>0</crs:PerspectiveHorizontal>
+         <crs:PerspectiveRotate>0.0</crs:PerspectiveRotate>
+         <crs:PerspectiveAspect>0</crs:PerspectiveAspect>
+         <crs:PerspectiveScale>100</crs:PerspectiveScale>
+         <crs:PerspectiveX>0.00</crs:PerspectiveX>
+         <crs:PerspectiveY>0.00</crs:PerspectiveY>
+         <crs:ReshapeAmount>0</crs:ReshapeAmount>
+         <crs:GrainAmount>0</crs:GrainAmount>
+         <crs:Glow>0</crs:Glow>
+         <crs:PostCropVignetteAmount>0</crs:PostCropVignetteAmount>
+         <crs:ShadowTint>0</crs:ShadowTint>
+         <crs:RedHue>0</crs:RedHue>
+         <crs:RedSaturation>0</crs:RedSaturation>
+         <crs:GreenHue>0</crs:GreenHue>
+         <crs:GreenSaturation>0</crs:GreenSaturation>
+         <crs:BlueHue>-16</crs:BlueHue>
+         <crs:BlueSaturation>+28</crs:BlueSaturation>
+         <crs:HDREditMode>0</crs:HDREditMode>
+         <crs:CurveRefineSaturation>100</crs:CurveRefineSaturation>
+         <crs:OverrideLookVignette>False</crs:OverrideLookVignette>
+         <crs:ToneCurveName2012>Custom</crs:ToneCurveName2012>
+         <crs:ToneCurvePV2012>
+            <rdf:Seq>
+               <rdf:li>0, 0</rdf:li>
+               <rdf:li>48, 53</rdf:li>
+               <rdf:li>123, 149</rdf:li>
+               <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+         </crs:ToneCurvePV2012>
+         <crs:ToneCurvePV2012Red>
+            <rdf:Seq>
+               <rdf:li>0, 0</rdf:li>
+               <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+         </crs:ToneCurvePV2012Red>
+         <crs:ToneCurvePV2012Green>
+            <rdf:Seq>
+               <rdf:li>0, 0</rdf:li>
+               <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+         </crs:ToneCurvePV2012Green>
+         <crs:ToneCurvePV2012Blue>
+            <rdf:Seq>
+               <rdf:li>0, 0</rdf:li>
+               <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+         </crs:ToneCurvePV2012Blue>
+         <crs:PointColors>
+            <rdf:Seq>
+               <rdf:li>-1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000</rdf:li>
+            </rdf:Seq>
+         </crs:PointColors>
+         <crs:ColorVariance>
+            <rdf:Seq>
+               <rdf:li>-50.000000</rdf:li>
+            </rdf:Seq>
+         </crs:ColorVariance>
+         <crs:CameraProfile>Adobe Standard</crs:CameraProfile>
+         <crs:CameraProfileDigest>34CFA4AC8E3861352E9AE36290FF5B0C</crs:CameraProfileDigest>
+         <crs:LensProfileSetup>LensDefaults</crs:LensProfileSetup>
+         <crs:LensProfileName>Camera Settings</crs:LensProfileName>
+         <crs:LensProfileDigest>5C44CBD551D98780D3065DEE1CFF0727</crs:LensProfileDigest>
+         <crs:LensProfileIsEmbedded>True</crs:LensProfileIsEmbedded>
+         <crs:LensProfileDistortionScale>100</crs:LensProfileDistortionScale>
+         <crs:LensProfileVignettingScale>100</crs:LensProfileVignettingScale>
+         <crs:RangeMaskMapInfo rdf:parseType="Resource">
+            <crs:RangeMaskMapInfo rdf:parseType="Resource">
+               <crs:RGBMin>0.001022 0.000977 0.001099</crs:RGBMin>
+               <crs:RGBMax>0.056489 0.054170 0.080644</crs:RGBMax>
+               <crs:LabMin>0.001648 0.474113 0.481468</crs:LabMin>
+               <crs:LabMax>0.994736 0.579293 0.612390</crs:LabMax>
+               <crs:LumEq>
+                  <rdf:Seq>
+                     <rdf:li>0.000000 0.000000</rdf:li>
+                     <rdf:li>0.031250 0.002827</rdf:li>
+                     <rdf:li>0.062500 0.007734</rdf:li>
+                     <rdf:li>0.093750 0.017349</rdf:li>
+                     <rdf:li>0.125000 0.035349</rdf:li>
+                     <rdf:li>0.156250 0.066389</rdf:li>
+                     <rdf:li>0.187500 0.114565</rdf:li>
+                     <rdf:li>0.218750 0.180236</rdf:li>
+                     <rdf:li>0.250000 0.256951</rdf:li>
+                     <rdf:li>0.281250 0.332188</rdf:li>
+                     <rdf:li>0.312500 0.393478</rdf:li>
+                     <rdf:li>0.343750 0.435439</rdf:li>
+                     <rdf:li>0.375000 0.461173</rdf:li>
+                     <rdf:li>0.406250 0.477645</rdf:li>
+                     <rdf:li>0.437500 0.490656</rdf:li>
+                     <rdf:li>0.468750 0.503192</rdf:li>
+                     <rdf:li>0.500000 0.516130</rdf:li>
+                     <rdf:li>0.531250 0.529260</rdf:li>
+                     <rdf:li>0.562500 0.542035</rdf:li>
+                     <rdf:li>0.593750 0.554131</rdf:li>
+                     <rdf:li>0.625000 0.565634</rdf:li>
+                     <rdf:li>0.656250 0.576822</rdf:li>
+                     <rdf:li>0.687500 0.587922</rdf:li>
+                     <rdf:li>0.718750 0.599316</rdf:li>
+                     <rdf:li>0.750000 0.612001</rdf:li>
+                     <rdf:li>0.781250 0.628088</rdf:li>
+                     <rdf:li>0.812500 0.651547</rdf:li>
+                     <rdf:li>0.843750 0.688324</rdf:li>
+                     <rdf:li>0.875000 0.743196</rdf:li>
+                     <rdf:li>0.906250 0.813448</rdf:li>
+                     <rdf:li>0.937500 0.886639</rdf:li>
+                     <rdf:li>0.968750 0.949324</rdf:li>
+                     <rdf:li>1.000000 1.000000</rdf:li>
+                  </rdf:Seq>
+               </crs:LumEq>
+            </crs:RangeMaskMapInfo>
+         </crs:RangeMaskMapInfo>
+         <crs:AllowFilters>1</crs:AllowFilters>
+         <crs:Look rdf:parseType="Resource">
+            <crs:Name>Adobe Color</crs:Name>
+            <crs:Amount>1</crs:Amount>
+            <crs:Group>
+               <rdf:Alt>
+                  <rdf:li xml:lang="x-default">Profiles</rdf:li>
+               </rdf:Alt>
+            </crs:Group>
+            <crs:UUID>B952C231111CD8E0ECCF14B86BAA7077</crs:UUID>
+            <crs:SupportsAmount>false</crs:SupportsAmount>
+            <crs:SupportsMonochrome>false</crs:SupportsMonochrome>
+            <crs:SupportsOutputReferred>false</crs:SupportsOutputReferred>
+            <crs:Copyright>© 2018 Adobe Systems, Inc.</crs:Copyright>
+            <crs:Parameters rdf:parseType="Resource">
+               <crs:Version>19.0</crs:Version>
+               <crs:ProcessVersion>15.4</crs:ProcessVersion>
+               <crs:ConvertToGrayscale>False</crs:ConvertToGrayscale>
+               <crs:ToneCurvePV2012>
+                  <rdf:Seq>
+                     <rdf:li>0, 0</rdf:li>
+                     <rdf:li>22, 16</rdf:li>
+                     <rdf:li>40, 35</rdf:li>
+                     <rdf:li>127, 127</rdf:li>
+                     <rdf:li>224, 230</rdf:li>
+                     <rdf:li>240, 246</rdf:li>
+                     <rdf:li>255, 255</rdf:li>
+                  </rdf:Seq>
+               </crs:ToneCurvePV2012>
+               <crs:ToneCurvePV2012Red>
+                  <rdf:Seq>
+                     <rdf:li>0, 0</rdf:li>
+                     <rdf:li>255, 255</rdf:li>
+                  </rdf:Seq>
+               </crs:ToneCurvePV2012Red>
+               <crs:ToneCurvePV2012Green>
+                  <rdf:Seq>
+                     <rdf:li>0, 0</rdf:li>
+                     <rdf:li>255, 255</rdf:li>
+                  </rdf:Seq>
+               </crs:ToneCurvePV2012Green>
+               <crs:ToneCurvePV2012Blue>
+                  <rdf:Seq>
+                     <rdf:li>0, 0</rdf:li>
+                     <rdf:li>255, 255</rdf:li>
+                  </rdf:Seq>
+               </crs:ToneCurvePV2012Blue>
+               <crs:PointColors>
+                  <rdf:Seq>
+                     <rdf:li>-1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000, -1.000000</rdf:li>
+                  </rdf:Seq>
+               </crs:PointColors>
+               <crs:ColorVariance>
+                  <rdf:Seq>
+                     <rdf:li>-50.000000</rdf:li>
+                  </rdf:Seq>
+               </crs:ColorVariance>
+               <crs:CameraProfile>Adobe Standard</crs:CameraProfile>
+               <crs:LookTable>E1095149FDB39D7A057BAB208837E2E1</crs:LookTable>
+            </crs:Parameters>
+         </crs:Look>
+         <crs:HasSettings>True</crs:HasSettings>
+         <crs:HasCrop>False</crs:HasCrop>
+         <crs:AlreadyApplied>True</crs:AlreadyApplied>
+         <tiff:XResolution>240/1</tiff:XResolution>
+         <tiff:YResolution>240/1</tiff:YResolution>
+         <tiff:ResolutionUnit>2</tiff:ResolutionUnit>
+         <tiff:Make>Canon</tiff:Make>
+         <tiff:Model>Canon EOS R5m2</tiff:Model>
+         <exif:ExifVersion>0231</exif:ExifVersion>
+         <exif:ColorSpace>65535</exif:ColorSpace>
+         <exif:PixelXDimension>8192</exif:PixelXDimension>
+         <exif:PixelYDimension>5464</exif:PixelYDimension>
+         <exif:DateTimeOriginal>2026-11-03T06:48:19</exif:DateTimeOriginal>
+         <exif:ExposureTime>13/10</exif:ExposureTime>
+         <exif:FNumber>11/1</exif:FNumber>
+         <exif:ExposureProgram>1</exif:ExposureProgram>
+         <exif:ISOSpeedRatings>
+            <rdf:Seq>
+               <rdf:li>125</rdf:li>
+            </rdf:Seq>
+         </exif:ISOSpeedRatings>
+         <exif:ShutterSpeedValue>-378512/1000000</exif:ShutterSpeedValue>
+         <exif:ApertureValue>6918863/1000000</exif:ApertureValue>
+         <exif:ExposureBiasValue>0/1</exif:ExposureBiasValue>
+         <exif:MaxApertureValue>4125/1000</exif:MaxApertureValue>
+         <exif:MeteringMode>5</exif:MeteringMode>
+         <exif:Flash rdf:parseType="Resource">
+            <exif:Fired>False</exif:Fired>
+            <exif:Return>0</exif:Return>
+            <exif:Mode>0</exif:Mode>
+            <exif:Function>False</exif:Function>
+            <exif:RedEyeMode>False</exif:RedEyeMode>
+         </exif:Flash>
+         <exif:FocalLength>33/1</exif:FocalLength>
+         <exif:FocalPlaneXResolution>8192000/1419</exif:FocalPlaneXResolution>
+         <exif:FocalPlaneYResolution>5464000/947</exif:FocalPlaneYResolution>
+         <exif:FocalPlaneResolutionUnit>2</exif:FocalPlaneResolutionUnit>
+         <exif:CustomRendered>0</exif:CustomRendered>
+         <exif:ExposureMode>1</exif:ExposureMode>
+         <exif:WhiteBalance>0</exif:WhiteBalance>
+         <exif:SceneCaptureType>0</exif:SceneCaptureType>
+         <exif:SubSecTime>55</exif:SubSecTime>
+         <exif:SubSecTimeOriginal>55</exif:SubSecTimeOriginal>
+         <exif:SubSecTimeDigitized>55</exif:SubSecTimeDigitized>
+         <exif:SerialNumber>155202403430</exif:SerialNumber>
+         <exif:LensInfo>
+            <rdf:Seq>
+               <rdf:li>24/1</rdf:li>
+            </rdf:Seq>
+         </exif:LensInfo>
+         <exif:Lens>RF24-105mm F4 L IS USM</exif:Lens>
+         <exif:LensSerialNumber>1764000991</exif:LensSerialNumber>
+         <exif:SensitivityType>2</exif:SensitivityType>
+         <exif:RecommendedExposureIndex>125</exif:RecommendedExposureIndex>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+<?xpacket end="w"?>

@@ -40,10 +40,10 @@ def ps():
 
 
 def test_raw_baseline(bp):
-    r = bp.get_raw_baseline()
-    assert r["source"] in ("document_xmp_at_open", "unavailable")
-    if r["source"] == "document_xmp_at_open":
-        assert "WhiteBalance" in r["baseline"]
+    # expects a document opened from LrC as a RAW smart object
+    r = bp.get_raw_baseline(LAYER)
+    assert r["source"] == "document_xmp_at_open", r
+    assert "WhiteBalance" in r["baseline"]
 
 
 def test_check_stale_is_stable(bp):
