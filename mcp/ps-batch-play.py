@@ -109,7 +109,14 @@ HSL = ("HueAdjustment", "SaturationAdjustment", "LuminanceAdjustment")
 _ATTR = re.compile(r'crs:(\w+)="([^"]*)"')
 _ELEM = re.compile(r'<crs:(\w+)>([^<]*)</crs:\1>')
 THUMB = (64, 64)          # downsampled RGB thumbnail compared between calls
-STALE_MAD = 1.5          # mean absolute difference (0-255 scale); tune after a known raw edit
+STALE_MAD = 0.25         # mean abs diff (0-255). Measured 2026-11-22: unchanged/undo = 0.00,
+                         # Temp -200 K < 1.5 (missed at 1.5), Exposure +0.10 = 3.24
+WB_PCT = 0.5             # both |R/G| and |B/G| must move this much (%), in opposite directions.
+                         # Measured: Temp -200 K = -0.92/+1.11 (WB); Exposure +0.10 = +0.19/-0.51 (not WB)
+
+
+def _likely_wb(rg_pct: float, bg_pct: float) -> bool:
+    return rg_pct * bg_pct < 0 and min(abs(rg_pct), abs(bg_pct)) > WB_PCT
 _last_thumb: dict[int, np.ndarray] = {}
 
 
@@ -149,22 +156,35 @@ def _thumb(b64: str) -> np.ndarray:
 @mcp.tool()
 def check_stale(layer_id: int, mark: bool = False) -> dict:
     """Compare the layer render with the thumbnail stored after the LLM's last batch.
-    Call with mark=True right after each LLM batch. stale=True with no LLM change
-    means the user edited something (e.g. the raw in Camera Raw): ask what changed.
-    channel_shift is the mean R/G/B change; an uneven shift suggests a white-balance edit.
-    Uses mean pixel difference (not a perceptual hash) so global exposure/WB edits register."""
+    Call with mark=True at session start and right after each LLM batch.
+    stale=True with no LLM change means the user edited something (e.g. the raw in
+    Camera Raw): ask what changed. Unchanged renders give distance 0.0 exactly.
+
+    channel_shift: mean R/G/B change in levels. It is uneven even for pure exposure
+    edits (a warm image gains more red), so do NOT infer white balance from it.
+    wb_hint: change in the R/G and B/G ratios (%). Exposure leaves both near 0;
+    a white-balance edit moves them in opposite directions (cooler: rg_pct < 0,
+    bg_pct > 0). Camera Raw exposure can nudge one ratio slightly (tone curve,
+    highlight roll-off), so likely_wb=True only when BOTH ratios move beyond WB_PCT
+    in opposite directions."""
     r = sendCommand(createCommand("getLayerImage", {"layerId": layer_id, "maxSize": 512}))
     if r.get("status") != "SUCCESS":
         raise RuntimeError(f"getLayerImage failed: {r}")
     t = _thumb(r["response"]["dataUrl"].split(",", 1)[1])
     prev = _last_thumb.get(layer_id)
     if prev is None or prev.shape != t.shape:
-        out = {"stale": False, "distance": None, "channel_shift": None}
+        out = {"stale": False, "distance": None, "channel_shift": None, "wb_hint": None}
     else:
         diff = t - prev
         mad = float(np.abs(diff).mean())
+        m0 = prev.reshape(-1, 3).mean(axis=0) + 1e-6
+        m1 = t.reshape(-1, 3).mean(axis=0) + 1e-6
+        rg = 100 * ((m1[0] / m1[1]) / (m0[0] / m0[1]) - 1)
+        bg = 100 * ((m1[2] / m1[1]) / (m0[2] / m0[1]) - 1)
         out = {"stale": mad > STALE_MAD, "distance": round(mad, 2),
-               "channel_shift": [round(float(c), 2) for c in diff.reshape(-1, 3).mean(axis=0)]}
+               "channel_shift": [round(float(c), 2) for c in diff.reshape(-1, 3).mean(axis=0)],
+               "wb_hint": {"rg_pct": round(float(rg), 2), "bg_pct": round(float(bg), 2),
+                           "likely_wb": _likely_wb(float(rg), float(bg))}}
     if mark or prev is None:
         _last_thumb[layer_id] = t
     return out

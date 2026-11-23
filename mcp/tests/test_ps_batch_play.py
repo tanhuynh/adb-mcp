@@ -91,7 +91,7 @@ class TestCheckStale:
 
     def test_first_call_sets_reference(self, bp, fake):
         fake.queue(ok(jpeg_payload(gradient())))
-        assert bp.check_stale(2) == {"stale": False, "distance": None, "channel_shift": None}
+        assert bp.check_stale(2) == {"stale": False, "distance": None, "channel_shift": None, "wb_hint": None}
 
     def test_identical_render_is_not_stale(self, bp, fake):
         img = gradient()
@@ -118,6 +118,28 @@ class TestCheckStale:
         assert r["stale"] is True
         red, green, blue = r["channel_shift"]
         assert red < -3 and blue > 3 and abs(green) < 1.5
+
+    def test_exposure_is_not_flagged_as_white_balance(self, bp, fake):
+        # multiplicative brightening (what exposure does): ratios stay put
+        import numpy as np
+        from PIL import Image
+        a = gradient()
+        b = Image.fromarray(np.clip(np.asarray(a, dtype=float) * 1.06, 0, 255).astype("uint8"))
+        fake.queue(ok(jpeg_payload(a)), ok(jpeg_payload(b)))
+        bp.check_stale(2, mark=True)
+        r = bp.check_stale(2)
+        assert r["stale"] is True
+        assert r["wb_hint"]["likely_wb"] is False
+        assert abs(r["wb_hint"]["rg_pct"]) < 0.5 and abs(r["wb_hint"]["bg_pct"]) < 0.5
+
+    def test_small_white_balance_edit_is_caught(self, bp, fake):
+        # like the measured Temp -200 K: R -0.7, G 0, B +0.7 levels
+        fake.queue(ok(jpeg_payload(gradient())), ok(jpeg_payload(gradient(offset=(-1, 0, 1)))))
+        bp.check_stale(2, mark=True)
+        r = bp.check_stale(2)
+        assert r["stale"] is True, r
+        assert r["wb_hint"]["likely_wb"] is True
+        assert r["wb_hint"]["rg_pct"] < 0 < r["wb_hint"]["bg_pct"]
 
     def test_mark_moves_reference(self, bp, fake):
         a, b = gradient(), gradient(offset=(10, 10, 10))
@@ -151,3 +173,13 @@ def test_call_batch_play_passes_commands_through(bp, fake):
     fake.queue(ok([{"ok": 1}]))
     assert bp.call_batch_play_command(descs) == ok([{"ok": 1}])
     assert fake.calls[0]["options"] == {"commands": descs}
+
+
+@pytest.mark.parametrize("rg,bg,expected", [
+    (-0.92, 1.11, True),     # measured 2026-11-22: Temp -200 K
+    (0.19, -0.51, False),    # measured 2026-11-22: Exposure +0.10 (tone curve nudges B/G)
+    (0.05, 0.03, False),     # unchanged ratios
+    (1.2, 0.8, False),       # same direction: not a temperature move
+], ids=["temp-200K", "exposure+0.10", "flat", "same-sign"])
+def test_likely_wb_rule(bp, rg, bg, expected):
+    assert bp._likely_wb(rg, bg) is expected
