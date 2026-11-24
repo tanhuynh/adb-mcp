@@ -530,10 +530,27 @@ const executeBatchPlayCommand = async (commands) => {
 
 
 
-    let out = await execute(async () => {
-        let o = await action.batchPlay(c, {});
-        return o   // all results, not just the first descriptor's
-    });
+    // One named history step per batch: a scripted write shows as e.g. "AI batchPlay" in the
+    // History panel and a single Cmd+Z undoes it. On error the step is rolled back.
+    const historyName = options.historyName ?? "AI batchPlay";
+    let out = await execute(async (ctx) => {
+        const doc = app.activeDocument;
+        let suspension = null;
+        if (doc && ctx?.hostControl?.suspendHistory) {
+            suspension = await ctx.hostControl.suspendHistory({ documentID: doc.id, name: historyName });
+        }
+        let ok = false;
+        try {
+            const o = await action.batchPlay(c, {});
+            ok = true;
+            return o;   // all results, not just the first descriptor's
+        } finally {
+            if (suspension !== null) {
+                try { await ctx.hostControl.resumeHistory(suspension, ok); }
+                catch (e) { console.log(`resumeHistory: ${e}`); }   // e.g. the batch closed that document
+            }
+        }
+    }, historyName);
 
     console.log(out)
     return out;

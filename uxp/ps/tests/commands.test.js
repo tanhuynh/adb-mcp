@@ -6,7 +6,7 @@ const Module = require("node:module");
 
 // ---- stub `photoshop` and `uxp` before the handlers are required ----------------
 const calls = { getPixels: [], encode: [], batchPlay: [], disposed: 0 };
-const state = { encodeThrows: false, batchPlayResult: [] };
+const state = { encodeThrows: false, batchPlayResult: [], batchPlayThrows: false, ctx: {} };
 
 const fakeImageData = (opts) => ({
     width: opts.targetSize?.width ?? 8192,
@@ -19,8 +19,8 @@ const fakeImageData = (opts) => ({
 const photoshop = {
     app: { activeDocument: { id: 142, layers: [{ id: 2, name: "_52_0378" }, { id: 5, name: "grp", layers: [{ id: 7 }] }] } },
     constants: {},
-    core: { executeAsModal: async (cb) => cb({}) },
-    action: { batchPlay: async (descs) => { calls.batchPlay.push(descs); return state.batchPlayResult; } },
+    core: { executeAsModal: async (cb) => cb(state.ctx) },
+    action: { batchPlay: async (descs) => { calls.batchPlay.push(descs); if (state.batchPlayThrows) throw new Error("bp failed"); return state.batchPlayResult; } },
     imaging: {
         getPixels: async (opts) => { calls.getPixels.push(opts); return { imageData: fakeImageData(opts) }; },
         encodeImageData: async (o) => {
@@ -43,7 +43,7 @@ const layers = require("../commands/layers.js").commandHandlers;
 
 beforeEach(() => {
     calls.getPixels.length = 0; calls.encode.length = 0; calls.batchPlay.length = 0; calls.disposed = 0;
-    state.encodeThrows = false; state.batchPlayResult = [];
+    state.encodeThrows = false; state.batchPlayResult = []; state.batchPlayThrows = false; state.ctx = {};
 });
 
 const PREVIEW_OPTS = { componentSize: 8, colorProfile: "sRGB IEC61966-2.1", applyAlpha: true };
@@ -111,4 +111,36 @@ test("executeBatchPlayCommand: returns every result, not just the first", async 
     const r = await core.executeBatchPlayCommand({ options: { commands: descs } });
     assert.deepEqual(calls.batchPlay[0], descs);
     assert.deepEqual(r, state.batchPlayResult);
+});
+
+// ---- named history step ---------------------------------------------------------
+const hostControl = () => {
+    const log = [];
+    return { log, hc: {
+        suspendHistory: async (o) => { log.push(["suspend", o]); return 77; },
+        resumeHistory: async (id, commit) => { log.push(["resume", id, commit]); },
+    } };
+};
+
+test("executeBatchPlayCommand: wraps the batch in one named history step", async () => {
+    const { log, hc } = hostControl(); state.ctx = { hostControl: hc };
+    await core.executeBatchPlayCommand({ options: { commands: [{ _obj: "set" }], historyName: "AI recipe 0367" } });
+    assert.deepEqual(log, [["suspend", { documentID: 142, name: "AI recipe 0367" }], ["resume", 77, true]]);
+});
+
+test("executeBatchPlayCommand: default history name", async () => {
+    const { log, hc } = hostControl(); state.ctx = { hostControl: hc };
+    await core.executeBatchPlayCommand({ options: { commands: [] } });
+    assert.equal(log[0][1].name, "AI batchPlay");
+});
+
+test("executeBatchPlayCommand: rolls the step back when batchPlay fails", async () => {
+    const { log, hc } = hostControl(); state.ctx = { hostControl: hc }; state.batchPlayThrows = true;
+    await assert.rejects(core.executeBatchPlayCommand({ options: { commands: [{ _obj: "set" }] } }), /bp failed/);
+    assert.deepEqual(log.at(-1), ["resume", 77, false]);
+});
+
+test("executeBatchPlayCommand: still works without hostControl (older hosts)", async () => {
+    state.batchPlayResult = [{ ok: 1 }];
+    assert.deepEqual(await core.executeBatchPlayCommand({ options: { commands: [] } }), [{ ok: 1 }]);
 });
